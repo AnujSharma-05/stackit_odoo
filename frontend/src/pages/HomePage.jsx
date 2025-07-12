@@ -132,6 +132,14 @@ const HomePage = () => {
                   >
                     Get started
                   </Link>
+                  <Link
+                    to="/admin"
+                    className="px-8 py-4 bg-white text-black font-semibold rounded-xl 
+                             hover:bg-gray-100 transition-all duration-300 flex-shrink-0
+                             hover:scale-105 transform shadow-lg hover:shadow-xl"
+                  >
+                    Admin Dashboard
+                  </Link>
                 </div>
               </div>
             )}
