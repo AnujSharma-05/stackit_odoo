@@ -88,4 +88,20 @@ userSchema.index({ reputation: -1 });
 userSchema.index({ 'stats.questionsAsked': -1 });
 userSchema.index({ lastSeen: -1 });
 
+userSchema.pre("save", async function (next) {
+  if(!this.isModified("password")) return next(); // if password is not modified, skip hashing
+  // if password is modified, hash it
+  
+  // if (this.password.length < 6) {
+  //     return next(new Error("Password must be at least 6 characters long"));
+  // }
+  
+  this.password = await bcrypt.hash(this.password, 10)
+  next()
+}) // pre-save hook to hash password before saving into the database
+
+userSchema.methods.isPasswordCorrect = async function (password) { // custom method to check password
+  return await bcrypt.compare(password, this.password); // returns true or false (this.password is that which is in db)
+}
+
 module.export = mongoose.model('User', userSchema);
