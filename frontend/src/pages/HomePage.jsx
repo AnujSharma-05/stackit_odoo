@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { questionsAPI } from '../services/api';
+import toast from 'react-hot-toast';
+import VoteButtons from '../components/UI/VoteButtons';
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
@@ -27,6 +29,12 @@ const HomePage = () => {
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
+
+  const handleQuestionUpdate = (updatedQuestion) => {
+    setQuestions(prev => prev.map(q => 
+      q._id === updatedQuestion._id ? updatedQuestion : q
+    ));
+  };
 
   const filteredQuestions = questions.filter(question => {
     const matchesSearch = question.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -253,7 +261,11 @@ const HomePage = () => {
               ) : (
                 <div className="space-y-6">
                   {filteredQuestions.map((question) => (
-                    <QuestionCard key={question._id} question={question} />
+                    <QuestionCard 
+                      key={question._id} 
+                      question={question} 
+                      onQuestionUpdate={handleQuestionUpdate}
+                    />
                   ))}
                 </div>
               )}
@@ -266,9 +278,9 @@ const HomePage = () => {
 };
 
 // Question Card Component
-const QuestionCard = ({ question }) => {
-  const [userVote, setUserVote] = useState(null); // 1 for upvote, -1 for downvote, null for no vote
-  const [currentVoteScore, setCurrentVoteScore] = useState(question.voteScore || 0);
+const QuestionCard = ({ question, onQuestionUpdate }) => {
+  const { isAuthenticated, user } = useAuth();
+  const [isVoting, setIsVoting] = useState(false);
   
   const {
     _id,
@@ -279,27 +291,25 @@ const QuestionCard = ({ question }) => {
     views,
     answerCount,
     acceptedAnswer,
-    createdAt
+    createdAt,
+    metrics
   } = question;
 
-  const handleVote = async (voteType, e) => {
-    e.preventDefault(); // Prevent navigation when clicking vote buttons
-    e.stopPropagation();
+  const handleVoteChange = async (newScore, newUserVote) => {
+    // Update the question object with new vote data
+    const updatedQuestion = {
+      ...question,
+      metrics: {
+        ...question.metrics,
+        score: newScore
+      },
+      userVote: newUserVote
+    };
     
-    const newVote = userVote === voteType ? null : voteType;
-    const scoreDiff = newVote === null ? -userVote : (userVote === null ? newVote : newVote - userVote);
-    
-    setUserVote(newVote);
-    setCurrentVoteScore(prev => prev + scoreDiff);
-    
-    // Here you would typically call an API to update the vote
-    // try {
-    //   await questionsAPI.voteQuestion(_id, newVote);
-    // } catch (error) {
-    //   // Revert on error
-    //   setUserVote(userVote);
-    //   setCurrentVoteScore(currentVoteScore);
-    // }
+    // Update the question in the parent component
+    if (onQuestionUpdate) {
+      onQuestionUpdate(updatedQuestion);
+    }
   };
 
   const getTextPreview = (html, maxLength = 150) => {
@@ -334,37 +344,16 @@ const QuestionCard = ({ question }) => {
                     backdrop-blur-md group-hover:scale-[1.02] transform">
         <div className="flex items-start gap-6">
           {/* Vote Score with buttons */}
-          <div className="flex flex-col items-center bg-gray-800/60 rounded-xl p-3 min-w-[70px] 
-                        backdrop-blur-sm border border-gray-700/50">
-            <button
-              onClick={(e) => handleVote(1, e)}
-              className={`p-1 rounded-lg transition-all duration-200 hover:scale-110 ${
-                userVote === 1 
-                  ? 'text-green-400 bg-green-400/20' 
-                  : 'text-gray-400 hover:text-green-400 hover:bg-green-400/10'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-            
-            <span className="text-lg font-bold text-white my-1 transition-colors duration-200">
-              {currentVoteScore}
-            </span>
-            
-            <button
-              onClick={(e) => handleVote(-1, e)}
-              className={`p-1 rounded-lg transition-all duration-200 hover:scale-110 ${
-                userVote === -1 
-                  ? 'text-red-400 bg-red-400/20' 
-                  : 'text-gray-400 hover:text-red-400 hover:bg-red-400/10'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
+          <div className="flex-shrink-0">
+            <VoteButtons
+              targetId={question._id}
+              targetType="question"
+              initialScore={question.metrics?.score || 0}
+              initialUserVote={question.userVote}
+              onVoteChange={handleVoteChange}
+              isOwner={user && question.author && user._id === question.author._id}
+              isVoting={isVoting}
+            />
           </div>
 
           {/* Content */}
@@ -404,14 +393,14 @@ const QuestionCard = ({ question }) => {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
                   </svg>
-                  {answerCount || 0} answers
+                  {answerCount || metrics?.answerCount || 0} answers
                 </span>
                 <span className="flex items-center gap-2 bg-gray-800/40 px-3 py-1.5 rounded-lg">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                     <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
                   </svg>
-                  {views || 0} views
+                  {views || metrics?.views || 0} views
                 </span>
                 {acceptedAnswer && (
                   <span className="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20">

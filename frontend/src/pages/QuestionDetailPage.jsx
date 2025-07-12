@@ -85,12 +85,19 @@ const QuestionDetailPage = () => {
     }
 
     try {
-      const response = await questionsAPI.voteQuestion(id, voteType);
-      setQuestion(prev => ({
-        ...prev,
-        voteScore: response.data.voteScore,
-        userVote: response.data.userVote
-      }));
+      console.log('Voting on question:', id, 'voteType:', voteType); // Debug log
+      await questionsAPI.voteQuestion(id, voteType);
+      
+      // Refresh question data to get updated vote scores
+      const response = await questionsAPI.getQuestion(id);
+      console.log('Updated question after vote:', response.data); // Debug log
+      
+      if (response.data.question) {
+        setQuestion(response.data.question);
+      } else {
+        setQuestion(response.data);
+      }
+      
       toast.success('Vote recorded');
     } catch (error) {
       console.error('Error voting on question:', error);
@@ -105,15 +112,14 @@ const QuestionDetailPage = () => {
     }
 
     try {
-      const response = await answersAPI.voteAnswer(answerId, voteType);
-      setAnswers(prev => prev
-        .filter(answer => answer && answer._id) // Filter out invalid answers
-        .map(answer => 
-          answer._id === answerId 
-            ? { ...answer, voteScore: response.data.voteScore, userVote: response.data.userVote }
-            : answer
-        )
-      );
+      console.log('Voting on answer:', answerId, 'voteType:', voteType); // Debug log
+      await answersAPI.voteAnswer(answerId, voteType);
+      
+      // Refresh answers data to get updated vote scores
+      const answersResponse = await answersAPI.getAnswersByQuestion(id);
+      console.log('Updated answers after vote:', answersResponse.data); // Debug log
+      setAnswers(answersResponse.data.answers || answersResponse.data || []);
+      
       toast.success('Vote recorded');
     } catch (error) {
       console.error('Error voting on answer:', error);
@@ -276,7 +282,7 @@ const QuestionDetailPage = () => {
                       voteScore={question.voteScore || question.metrics?.score || 0}
                       userVote={question.userVote}
                       onVote={handleQuestionVote}
-                      isOwner={question.isOwner}
+                      isOwner={user && question.author?._id === user._id}
                       disabled={!isAuthenticated()}
                       size="large"
                     />

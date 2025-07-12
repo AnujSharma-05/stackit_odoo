@@ -66,10 +66,10 @@ const AnswerComponent = ({
         {/* Vote Buttons */}
         <div className="flex-shrink-0">
           <VoteButtons
-            voteScore={answer.voteScore || 0}
+            voteScore={answer.voteScore || answer.metrics?.score || 0}
             userVote={answer.userVote}
             onVote={(voteType) => onVote && onVote(answer._id, voteType)}
-            isOwner={answer.isOwner}
+            isOwner={user && answer.author?._id === user._id}
             disabled={!isAuthenticated()}
             size="medium"
           />
