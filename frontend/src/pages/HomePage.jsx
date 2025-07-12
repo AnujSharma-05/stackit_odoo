@@ -327,7 +327,7 @@ const QuestionCard = ({ question }) => {
   };
 
   return (
-    <Link to={`/questions/${_id}`} className="block group">
+    <Link to={`/question/${_id}`} className="block group">
       <div className="bg-gray-900/60 border border-gray-800/50 rounded-xl p-6 
                     transition-all duration-300 ease-in-out
                     hover:bg-gray-900/80 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10

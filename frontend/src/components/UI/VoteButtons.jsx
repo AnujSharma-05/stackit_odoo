@@ -14,18 +14,21 @@ const VoteButtons = ({
   const sizeClasses = {
     small: 'w-6 h-6',
     default: 'w-8 h-8',
+    medium: 'w-9 h-9',
     large: 'w-10 h-10'
   };
 
   const iconSize = {
     small: 'h-4 w-4',
     default: 'h-5 w-5',
+    medium: 'h-5 w-5',
     large: 'h-6 w-6'
   };
 
   const textSize = {
     small: 'text-sm',
     default: 'text-lg',
+    medium: 'text-lg',
     large: 'text-xl'
   };
 

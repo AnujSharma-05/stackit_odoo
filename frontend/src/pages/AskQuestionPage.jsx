@@ -144,9 +144,9 @@ const AskQuestionPage = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      await questionsAPI.createQuestion({
+      await questionsAPI.create({
         title: formData.title,
-        description: formData.content,
+        content: formData.content,
         tags: formData.tags
       });
       toast.success('Question posted successfully!');
@@ -168,9 +168,9 @@ const AskQuestionPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,_#1e40af_0%,_transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,_#7c3aed_0%,_transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,_#0f172a_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%80%,#1e40af_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%20%,#7c3aed_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%40%,#0f172a_0%,_transparent_50%)]" />
       
       <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -224,12 +224,14 @@ const AskQuestionPage = () => {
                 <p className="text-gray-400 mb-4">
                   Include all the information someone would need to answer your question.
                 </p>
-                <RichTextEditor
-                  content={formData.content}
-                  onChange={handleDescriptionChange}
-                  placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."
-                  minHeight="200px"
-                />
+                <div className="rich-text-editor-container">
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={handleDescriptionChange}
+                    placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."
+                    minHeight="200px"
+                  />
+                </div>
               </div>
 
               {/* Tags Section */}
@@ -336,6 +338,103 @@ const AskQuestionPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Global Styles for Rich Text Editor */}
+      <style jsx global>{`
+        .rich-text-editor-container .ql-editor {
+          color: #ffffff !important;
+          background-color: rgba(31, 41, 55, 0.5) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-radius: 0.5rem !important;
+          min-height: 200px !important;
+        }
+        
+        .rich-text-editor-container .ql-editor::before {
+          color: #9ca3af !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar {
+          background-color: rgba(31, 41, 55, 0.8) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-bottom: none !important;
+          border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar .ql-stroke {
+          stroke: #d1d5db !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar .ql-fill {
+          fill: #d1d5db !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar button:hover {
+          background-color: rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar button.ql-active {
+          background-color: rgba(59, 130, 246, 0.5) !important;
+        }
+        
+        .rich-text-editor-container .ql-container {
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-top: none !important;
+          border-radius: 0 0 0.5rem 0.5rem !important;
+        }
+        
+        .rich-text-editor-container .ql-editor p,
+        .rich-text-editor-container .ql-editor h1,
+        .rich-text-editor-container .ql-editor h2,
+        .rich-text-editor-container .ql-editor h3,
+        .rich-text-editor-container .ql-editor h4,
+        .rich-text-editor-container .ql-editor h5,
+        .rich-text-editor-container .ql-editor h6,
+        .rich-text-editor-container .ql-editor ul,
+        .rich-text-editor-container .ql-editor ol,
+        .rich-text-editor-container .ql-editor li,
+        .rich-text-editor-container .ql-editor blockquote,
+        .rich-text-editor-container .ql-editor code,
+        .rich-text-editor-container .ql-editor pre {
+          color: #ffffff !important;
+        }
+        
+        .rich-text-editor-container .ql-editor code {
+          background-color: rgba(75, 85, 99, 0.8) !important;
+          padding: 2px 4px !important;
+          border-radius: 4px !important;
+        }
+        
+        .rich-text-editor-container .ql-editor pre {
+          background-color: rgba(17, 24, 39, 0.8) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-radius: 0.5rem !important;
+          padding: 1rem !important;
+        }
+        
+        .rich-text-editor-container .ql-editor blockquote {
+          border-left: 4px solid rgba(59, 130, 246, 0.5) !important;
+          background-color: rgba(31, 41, 55, 0.3) !important;
+          padding: 0.5rem 1rem !important;
+          margin: 1rem 0 !important;
+        }
+        
+        .rich-text-editor-container .ql-editor strong {
+          color: #ffffff !important;
+          font-weight: 600 !important;
+        }
+        
+        .rich-text-editor-container .ql-editor em {
+          color: #ffffff !important;
+        }
+        
+        .rich-text-editor-container .ql-editor a {
+          color: #60a5fa !important;
+        }
+        
+        .rich-text-editor-container .ql-editor a:hover {
+          color: #93c5fd !important;
+        }
+      `}</style>
     </div>
   );
 };

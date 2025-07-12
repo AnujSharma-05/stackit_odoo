@@ -14,7 +14,11 @@ A comprehensive Q&A platform built with the MERN stack, similar to Stack Overflo
 - ✅ User registration and authentication
 - ✅ Create and edit questions with rich text editor
 - ✅ Submit answers with formatting options
-- ✅ Vote on questions and answers (upvote/downvote)
+- ✅ **Reddit-like Question Detail Pages** - Expandable question view with threaded answers
+- ✅ **Advanced Voting System** - Upvote/downvote questions and answers with real-time score updates
+- ✅ **Answer Acceptance** - Question authors can mark best answers as accepted
+- ✅ **View Tracking** - Automatic view count increments for question popularity
+- ✅ **Rich Answer Interface** - Enhanced answer composition with tips and formatting
 - ✅ Comment on answers
 - ✅ Receive real-time notifications
 - ✅ Manage personal profile and reputation
@@ -167,10 +171,20 @@ stackit-platform/
 - Markdown-like syntax
 - Real-time preview
 
+### Reddit-like Question Detail Interface
+- **Expandable Question View** - Click any question to open detailed view
+- **Threaded Answer System** - Answers displayed in Reddit-style format
+- **Real-time Vote Counts** - Live upvote/downvote with immediate feedback
+- **Answer Acceptance** - Green checkmark for accepted answers
+- **View Tracking** - Automatic view count increment (excluding question author)
+- **Enhanced UI** - Beautiful gradient backgrounds with smooth animations
+
 ### Voting System
 - Upvote/downvote questions and answers
 - Reputation system based on votes
 - Prevents self-voting
+- **Real-time vote score updates**
+- **Visual feedback with color-coded scores**
 
 ### Tag System
 - Categorize questions with tags
