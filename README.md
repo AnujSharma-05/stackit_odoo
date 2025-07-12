@@ -51,7 +51,7 @@ This project supports:
 <summary>Click to expand</summary>
 
 ```
-stackit-backend/
+backend/
 ├── src/
 │   ├── config/
 │   ├── models/
@@ -89,7 +89,7 @@ stackit-backend/
 <summary>Click to expand</summary>
 
 ```
-stackit-frontend/
+frontend/
 ├── src/
 │   ├── pages/
 │   ├── components/
@@ -130,7 +130,7 @@ stackit-frontend/
 
 🔐 **Auth**: `/auth`  
 👤 **Users**: `/users`  
-❓ **Q&A**: `/qa`  
+❓ **Q&A**: `/`  
 📩 **Notifications**: `/notifications`  
 🛠 **Admin**: `/admin`
 
@@ -204,7 +204,7 @@ Here are some planned enhancements to make StackIt more robust and engaging:
 ### 1️⃣ Backend Setup
 
 ```bash
-cd stackit-backend
+cd backend
 npm install
 cp .env.example .env
 # Fill in DB, JWT_SECRET, Cloudinary keys
@@ -214,12 +214,12 @@ npm run dev
 ### 2️⃣ Frontend Setup
 
 ```bash
-cd stackit-frontend
+cd frontend
 npm install
-npm run dev
+npm start
 ```
 
-> Make sure frontend `.env` points to the correct backend API URL (`VITE_API_URL=http://localhost:5000/api`)
+> Make sure frontend `.env` points to the correct backend API URL (`VITE_API_URL=http://localhost:8000/api`)
 
 ---
 
