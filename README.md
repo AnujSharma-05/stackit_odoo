@@ -130,9 +130,9 @@ frontend/
 
 🔐 **Auth**: `/auth`  
 👤 **Users**: `/users`  
-❓ **Q&A**: `/`  
-📩 **Notifications**: `/notifications`  
-🛠 **Admin**: `/admin`
+❓ **Questions**: `/questions`  
+📩 **Answers**: `/answer`  
+🛠 **Votes**: `/votes`
 
 [Full API Reference included above]
 
