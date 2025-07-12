@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { questionsAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import VoteButtons from '../components/UI/VoteButtons';
+import Pagination from '../components/UI/Pagination';
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
@@ -12,19 +13,86 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  // For demo purposes, let's force pagination to show even with 4 questions
+  const questionsPerPage = 2; // Change to 2 to show pagination with 4 questions
 
   const fetchQuestions = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await questionsAPI.getQuestions();
-      setQuestions(response.data.questions || []);
+      
+      // Build query parameters
+      const params = {
+        page: currentPage,
+        limit: questionsPerPage,
+        search: searchTerm || undefined,
+        tag: selectedTag || undefined
+      };
+
+      // Remove undefined values
+      Object.keys(params).forEach(key => {
+        if (params[key] === undefined || params[key] === '') {
+          delete params[key];
+        }
+      });
+
+      console.log('Fetching questions with params:', params);
+      const response = await questionsAPI.getQuestions(params);
+      console.log('Questions response:', response.data);
+      
+      // Handle different response structures
+      if (response.data.questions && response.data.pagination) {
+        // Server-side pagination response
+        setQuestions(response.data.questions);
+        setTotalQuestions(response.data.pagination.total);
+        setTotalPages(response.data.pagination.totalPages);
+      } else if (Array.isArray(response.data)) {
+        // Simple array response - implement client-side pagination
+        const allQuestions = response.data;
+        
+        // Apply filters
+        let filteredQuestions = allQuestions.filter(question => {
+          const matchesSearch = !searchTerm || 
+            question.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            question.description?.toLowerCase().includes(searchTerm.toLowerCase());
+          const matchesTag = !selectedTag || question.tags?.some(tag => 
+            (typeof tag === 'string' ? tag : tag.name)?.toLowerCase().includes(selectedTag.toLowerCase())
+          );
+          return matchesSearch && matchesTag;
+        });
+
+        // Apply pagination
+        const startIndex = (currentPage - 1) * questionsPerPage;
+        const endIndex = startIndex + questionsPerPage;
+        const paginatedQuestions = filteredQuestions.slice(startIndex, endIndex);
+        
+        setQuestions(paginatedQuestions);
+        setTotalQuestions(filteredQuestions.length);
+        setTotalPages(Math.ceil(filteredQuestions.length / questionsPerPage));
+      } else if (response.data.questions) {
+        // Response with questions array but no pagination info
+        const allQuestions = response.data.questions;
+        const startIndex = (currentPage - 1) * questionsPerPage;
+        const endIndex = startIndex + questionsPerPage;
+        const paginatedQuestions = allQuestions.slice(startIndex, endIndex);
+        
+        setQuestions(paginatedQuestions);
+        setTotalQuestions(allQuestions.length);
+        setTotalPages(Math.ceil(allQuestions.length / questionsPerPage));
+      }
     } catch (error) {
       console.error('Error fetching questions:', error);
       setQuestions([]);
+      setTotalQuestions(0);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentPage, searchTerm, selectedTag, questionsPerPage]);
 
   useEffect(() => {
     fetchQuestions();
@@ -36,12 +104,18 @@ const HomePage = () => {
     ));
   };
 
-  const filteredQuestions = questions.filter(question => {
-    const matchesSearch = question.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         question.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTag = selectedTag === '' || question.tags?.includes(selectedTag);
-    return matchesSearch && matchesTag;
-  });
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset to first page when search or tag changes
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [searchTerm, selectedTag]);
 
   const popularTags = ['React', 'JavaScript', 'Node.js', 'MongoDB', 'Express', 'CSS', 'HTML', 'Python'];
 
@@ -240,7 +314,7 @@ const HomePage = () => {
                     </div>
                   ))}
                 </div>
-              ) : filteredQuestions.length === 0 ? (
+              ) : questions.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                     <MagnifyingGlassIcon className="h-8 w-8 text-gray-500" />
@@ -260,13 +334,38 @@ const HomePage = () => {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {filteredQuestions.map((question) => (
+                  {questions.map((question) => (
                     <QuestionCard 
                       key={question._id} 
                       question={question} 
                       onQuestionUpdate={handleQuestionUpdate}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Debug info - remove in production */}
+              {!loading && (
+                <div className="mt-4 p-4 bg-gray-800 rounded-lg text-sm text-gray-300">
+                  <div>Total Questions: {totalQuestions}</div>
+                  <div>Total Pages: {totalPages}</div>
+                  <div>Current Page: {currentPage}</div>
+                  <div>Questions Per Page: {questionsPerPage}</div>
+                  <div>Questions Shown: {questions.length}</div>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {!loading && totalQuestions > 0 && (
+                <div className="mt-12">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.max(1, totalPages)}
+                    onPageChange={handlePageChange}
+                    totalItems={totalQuestions}
+                    itemsPerPage={questionsPerPage}
+                    itemName="questions"
+                  />
                 </div>
               )}
             </div>
