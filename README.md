@@ -117,13 +117,10 @@ stackit-frontend/
 | **Vote System** | Upvote/downvote questions and answers |
 | **Search & Filter** | Search by keyword or tags |
 | **User Profiles** | View public profile, own contributions, leaderboard |
-| **Notifications** | Real-time toast & bell icon alerts using Socket.io |
 | **Admin Panel** | Moderate questions/answers, ban users |
 | **Responsive Design** | Mobile-friendly using TailwindCSS |
 | **Error Handling** | Toastify-based alerts, empty states, and loaders |
 | **Pagination** | For questions and answers lists |
-| **Bookmarking** | Save questions for later |
-| **Dark Mode (optional)** | Easy toggle support (optional module) |
 
 ---
 
@@ -149,9 +146,6 @@ stackit-frontend/
 ### 🔍 Search & Filtering
 - MongoDB text search + tag-based filters + sort
 
-### 📷 Image Upload
-- `Multer` + `Cloudinary` support  
-- Frontend preview + backend compression
 
 ### 🧠 Rich Editor Support
 - HTML-safe content with sanitization and formatting
@@ -170,7 +164,7 @@ stackit-frontend/
 - **Rate Limiting**: On auth-sensitive routes
 - **Validation**: Frontend + backend schema checks
 - **XSS/CORS/CSRF**: Via `helmet`, `cors`, sanitization
-- **Upload Validation**: Type, size, format checks
+
 
 ---
 
@@ -181,6 +175,27 @@ stackit-frontend/
 - 📁 **Image Optimization**: CDN, lazy loading
 - 📃 **Pagination**: Efficient data loading on frontend
 - 🧵 **Async Processing**: Event-driven architecture for votes and notifications
+
+---
+
+## 🔮 Future Scope
+
+Here are some planned enhancements to make StackIt more robust and engaging:
+
+- 📡 **Real-time Notifications for All Users**  
+  Broadcast important updates and mentions across the platform using WebSockets.
+
+- 🔖 **Bookmarking**  
+  Save questions or answers for later review directly from the UI.
+
+- 🚩 **Content Flagging and Reporting**  
+  Let users report inappropriate content for admin moderation.
+  ### 📷 Image Upload
+- `Multer` + `Cloudinary` support  
+- Frontend preview + backend compression
+
+- 💸 **Donation System for Writers**  
+  Enable users to financially support quality answer authors.
 
 ---
 
@@ -220,6 +235,3 @@ npm run dev
 | Deployment | Vercel (Frontend), Render / Railway / EC2 (Backend) |
 
 ---
-
-
-
