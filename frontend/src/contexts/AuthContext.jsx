@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
         // Verify token is still valid
         authAPI.getCurrentUser()
           .then(response => {
-            setUser(response.data.user);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            setUser(response.data.data);
+            localStorage.setItem('user', JSON.stringify(response.data.data));
           })
           .catch(() => {
             logout();
@@ -42,9 +42,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials);
-      const { token, user } = response.data;
+      const { accessToken, user } = response.data;
       
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', accessToken);
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
       
@@ -60,9 +60,9 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authAPI.register(userData);
-      const { token, user } = response.data;
+      const { accessToken, user } = response.data;
       
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', accessToken);
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
       

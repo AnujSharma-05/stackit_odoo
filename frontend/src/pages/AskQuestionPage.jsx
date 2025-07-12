@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { questionsAPI, tagsAPI } from '../services/api';
 import RichTextEditor from '../components/Editor/RichTextEditor.jsx';
 import LoadingSpinner from '../components/UI/LoadingSpinner.jsx';
 import toast from 'react-hot-toast';
+import { PlusIcon, TagIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 const AskQuestionPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
+    content: '',
     tags: []
   });
   const [availableTags, setAvailableTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchTags();
@@ -37,8 +40,8 @@ const AskQuestionPage = () => {
       [name]: value
     }));
     // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
+    if (error[name]) {
+      setError(prev => ({
         ...prev,
         [name]: ''
       }));
@@ -48,10 +51,10 @@ const AskQuestionPage = () => {
   const handleDescriptionChange = (content) => {
     setFormData(prev => ({
       ...prev,
-      description: content
+      content: content
     }));
-    if (errors.description) {
-      setErrors(prev => ({
+    if (error.description) {
+      setError(prev => ({
         ...prev,
         description: ''
       }));
@@ -77,8 +80,8 @@ const AskQuestionPage = () => {
         tags: [...prev.tags, tag]
       }));
       setTagInput('');
-      if (errors.tags) {
-        setErrors(prev => ({
+      if (error.tags) {
+        setError(prev => ({
           ...prev,
           tags: ''
         }));
@@ -113,11 +116,11 @@ const AskQuestionPage = () => {
       newErrors.title = 'Title must be less than 200 characters';
     }
 
-    if (!formData.description.trim() || formData.description === '<p></p>') {
+    if (!formData.content.trim() || formData.content === '<p></p>') {
       newErrors.description = 'Description is required';
     } else {
       // Strip HTML tags for length check
-      const textContent = formData.description.replace(/<[^>]*>/g, '');
+      const textContent = formData.content.replace(/<[^>]*>/g, '');
       if (textContent.length < 20) {
         newErrors.description = 'Description must be at least 20 characters';
       }
@@ -127,7 +130,7 @@ const AskQuestionPage = () => {
       newErrors.tags = 'At least one tag is required';
     }
 
-    setErrors(newErrors);
+    setError(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -139,14 +142,17 @@ const AskQuestionPage = () => {
     }
 
     setIsSubmitting(true);
+    setError('');
     try {
-      const response = await questionsAPI.createQuestion(formData);
+      await questionsAPI.create({
+        title: formData.title,
+        content: formData.content,
+        tags: formData.tags
+      });
       toast.success('Question posted successfully!');
-      navigate(`/question/${response.data.question._id}`);
-    } catch (error) {
-      const message = error.response?.data?.message || 'Failed to post question';
-      toast.error(message);
-      setErrors({ submit: message });
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create question');
     } finally {
       setIsSubmitting(false);
     }
@@ -160,164 +166,275 @@ const AskQuestionPage = () => {
     .slice(0, 5);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Ask a Question</h1>
-        <p className="text-gray-600">
-          Get help from the community by asking a clear, detailed question.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {errors.submit && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-            {errors.submit}
-          </div>
-        )}
-
-        {/* Title */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-semibold">Title</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Be specific and imagine you're asking a question to another person.
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%80%,#1e40af_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%20%,#7c3aed_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%40%,#0f172a_0%,_transparent_50%)]" />
+      
+      <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-6">
+              <PlusIcon className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              Ask a Question
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Get help from the community by asking a clear, detailed question.
             </p>
           </div>
-          <div className="card-body">
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="e.g., How to implement JWT authentication in Node.js?"
-              className={`form-input ${errors.title ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-            />
-            {errors.title && (
-              <p className="mt-2 text-sm text-red-600">{errors.title}</p>
-            )}
-          </div>
-        </div>
 
-        {/* Description */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-semibold">Description</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Include all the information someone would need to answer your question.
-            </p>
-          </div>
-          <div className="card-body">
-            <RichTextEditor
-              content={formData.description}
-              onChange={handleDescriptionChange}
-              placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."
-              minHeight="200px"
-            />
-            {errors.description && (
-              <p className="mt-2 text-sm text-red-600">{errors.description}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Tags */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-semibold">Tags</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Add up to 5 tags to describe what your question is about.
-            </p>
-          </div>
-          <div className="card-body">
-            {/* Selected Tags */}
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {formData.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-2 inline-flex items-center p-0.5 rounded-full text-primary-600 hover:text-primary-800 hover:bg-primary-200"
-                    >
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                  </span>
-                ))}
+          {/* Form */}
+          <div className="bg-gray-900/60 border border-gray-800/50 rounded-2xl p-8 backdrop-blur-md shadow-2xl">
+            {error && (
+              <div className="mb-6 p-4 bg-red-900/50 border border-red-500/50 rounded-lg text-red-200">
+                {error}
               </div>
             )}
 
-            {/* Tag Input */}
-            {formData.tags.length < 5 && (
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Title Section */}
               <div>
+                <label className="block text-lg font-semibold text-white mb-4">
+                  Question Title
+                </label>
+                <p className="text-gray-400 mb-4">
+                  Be specific and imagine you're asking a question to another person.
+                </p>
                 <input
                   type="text"
-                  value={tagInput}
-                  onChange={handleTagInputChange}
-                  onKeyDown={handleTagInputKeyDown}
-                  onBlur={addTag}
-                  placeholder="Add a tag (press Enter or comma to add)"
-                  className="form-input"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="e.g., How to implement JWT authentication in Node.js?"
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                  required
                 />
+              </div>
+
+              {/* Content Section */}
+              <div>
+                <label className="block text-lg font-semibold text-white mb-4">
+                  <DocumentTextIcon className="w-5 h-5 inline mr-2" />
+                  Question Details
+                </label>
+                <p className="text-gray-400 mb-4">
+                  Include all the information someone would need to answer your question.
+                </p>
+                <div className="rich-text-editor-container">
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={handleDescriptionChange}
+                    placeholder="Describe your problem in detail. Include what you've tried and what you expected to happen..."
+                    minHeight="200px"
+                  />
+                </div>
+              </div>
+
+              {/* Tags Section */}
+              <div>
+                <label className="block text-lg font-semibold text-white mb-4">
+                  <TagIcon className="w-5 h-5 inline mr-2" />
+                  Tags
+                </label>
+                <p className="text-gray-400 mb-4">
+                  Add up to 5 tags to describe what your question is about.
+                </p>
                 
-                {/* Tag Suggestions */}
-                {tagInput && suggestedTags.length > 0 && (
-                  <div className="mt-2 border border-gray-200 rounded-md bg-white shadow-sm">
-                    {suggestedTags.map((tag) => (
-                      <button
-                        key={tag._id}
-                        type="button"
-                        onClick={() => {
-                          selectSuggestedTag(tag);
-                          setTagInput('');
-                        }}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm border-b border-gray-100 last:border-b-0"
+                {/* Tag Input */}
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    placeholder="Enter a tag..."
+                    className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                    maxLength={20}
+                  />
+                  <button
+                    type="button"
+                    onClick={addTag}
+                    disabled={!tagInput.trim() || formData.tags.length >= 5}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {/* Selected Tags */}
+                {formData.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-full text-sm"
                       >
-                        <span className="font-medium">{tag.name}</span>
-                        <span className="text-gray-500 ml-2">({tag.questionsCount} questions)</span>
-                      </button>
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="hover:text-red-300 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
                     ))}
                   </div>
                 )}
               </div>
-            )}
 
-            {errors.tags && (
-              <p className="mt-2 text-sm text-red-600">{errors.tags}</p>
-            )}
+              {/* Submit Button */}
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <LoadingSpinner size="small" className="mr-2" />
+                      Posting Question...
+                    </>
+                  ) : (
+                    'Post Question'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  className="px-8 py-3 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 rounded-lg font-medium transition-colors border border-gray-600/50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Tips Section */}
+          <div className="mt-8 bg-gray-900/40 border border-gray-800/30 rounded-xl p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold text-white mb-4">💡 Tips for a Great Question</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-1">•</span>
+                <span>Make your title specific and descriptive</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-1">•</span>
+                <span>Include relevant code snippets or error messages</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-1">•</span>
+                <span>Explain what you've already tried</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-1">•</span>
+                <span>Use tags to help others find your question</span>
+              </li>
+            </ul>
           </div>
         </div>
-
-        {/* Submit Button */}
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="btn-secondary"
-          >
-            Cancel
-          </button>
-          
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn-primary"
-          >
-            {isSubmitting ? (
-              <>
-                <LoadingSpinner size="small" className="mr-2" />
-                Posting Question...
-              </>
-            ) : (
-              'Post Question'
-            )}
-          </button>
-        </div>
-      </form>
+      </div>
+      
+      {/* Global Styles for Rich Text Editor */}
+      <style jsx global>{`
+        .rich-text-editor-container .ql-editor {
+          color: #ffffff !important;
+          background-color: rgba(31, 41, 55, 0.5) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-radius: 0.5rem !important;
+          min-height: 200px !important;
+        }
+        
+        .rich-text-editor-container .ql-editor::before {
+          color: #9ca3af !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar {
+          background-color: rgba(31, 41, 55, 0.8) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-bottom: none !important;
+          border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar .ql-stroke {
+          stroke: #d1d5db !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar .ql-fill {
+          fill: #d1d5db !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar button:hover {
+          background-color: rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        .rich-text-editor-container .ql-toolbar button.ql-active {
+          background-color: rgba(59, 130, 246, 0.5) !important;
+        }
+        
+        .rich-text-editor-container .ql-container {
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-top: none !important;
+          border-radius: 0 0 0.5rem 0.5rem !important;
+        }
+        
+        .rich-text-editor-container .ql-editor p,
+        .rich-text-editor-container .ql-editor h1,
+        .rich-text-editor-container .ql-editor h2,
+        .rich-text-editor-container .ql-editor h3,
+        .rich-text-editor-container .ql-editor h4,
+        .rich-text-editor-container .ql-editor h5,
+        .rich-text-editor-container .ql-editor h6,
+        .rich-text-editor-container .ql-editor ul,
+        .rich-text-editor-container .ql-editor ol,
+        .rich-text-editor-container .ql-editor li,
+        .rich-text-editor-container .ql-editor blockquote,
+        .rich-text-editor-container .ql-editor code,
+        .rich-text-editor-container .ql-editor pre {
+          color: #ffffff !important;
+        }
+        
+        .rich-text-editor-container .ql-editor code {
+          background-color: rgba(75, 85, 99, 0.8) !important;
+          padding: 2px 4px !important;
+          border-radius: 4px !important;
+        }
+        
+        .rich-text-editor-container .ql-editor pre {
+          background-color: rgba(17, 24, 39, 0.8) !important;
+          border: 1px solid rgba(75, 85, 99, 0.5) !important;
+          border-radius: 0.5rem !important;
+          padding: 1rem !important;
+        }
+        
+        .rich-text-editor-container .ql-editor blockquote {
+          border-left: 4px solid rgba(59, 130, 246, 0.5) !important;
+          background-color: rgba(31, 41, 55, 0.3) !important;
+          padding: 0.5rem 1rem !important;
+          margin: 1rem 0 !important;
+        }
+        
+        .rich-text-editor-container .ql-editor strong {
+          color: #ffffff !important;
+          font-weight: 600 !important;
+        }
+        
+        .rich-text-editor-container .ql-editor em {
+          color: #ffffff !important;
+        }
+        
+        .rich-text-editor-container .ql-editor a {
+          color: #60a5fa !important;
+        }
+        
+        .rich-text-editor-container .ql-editor a:hover {
+          color: #93c5fd !important;
+        }
+      `}</style>
     </div>
   );
 };

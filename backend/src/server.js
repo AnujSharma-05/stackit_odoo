@@ -1,24 +1,33 @@
-import dotenv from "dotenv";
-import connectDB from "./config/database.js";
-import app from "./app.js"; 
+import app from './app.js';
+import connectDB from './config/database.js';
 
-dotenv.config({
-    path: "./.env" 
+const PORT = process.env.PORT || 5000;
+
+// Connect to database and start server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`⚙️  Server is running at port: ${PORT}`);
+      console.log(`🚀 StackIt Backend API is ready!`);
+      console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🌐 Server URL: http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("MongoDB connection failed!!", err);
+    process.exit(1);
+  });
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`Error: ${err.message}`);
+  console.log("Shutting down the server due to Unhandled Promise rejection");
+  process.exit(1);
 });
 
-const port = process.env.PORT || 8000;
-
-connectDB()
-.then(() => {
-    app.on("error", (error) => { // this app is gettig imported from app.js
-        console.log("ERROR !!", error);
-        throw error;
-    }); // Handle error event
-
-    app.listen(port, () => {
-        console.log(`Server is running at http://localhost:${port}`);
-    }); // Start the server and listen on the specified port
-})
-.catch((err) => {
-    console.error("MongoDB connection failed !!!", err)
+// Handle uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.log(`Error: ${err.message}`);
+  console.log("Shutting down the server due to Uncaught Exception");
+  process.exit(1);
 });

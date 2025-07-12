@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 // Create axios instance
 const api = axios.create({
@@ -41,8 +41,11 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (userData) => api.post('/auth/register', userData),
   login: (credentials) => api.post('/auth/login', credentials),
-  getCurrentUser: () => api.get('/auth/me'),
-  refreshToken: () => api.post('/auth/refresh'),
+  getCurrentUser: () => api.get('/users/me'),
+  refreshToken: () => api.post('/auth/refresh-token'),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+  changePassword: (oldPassword, newPassword) => api.post('/auth/change-password', { oldPassword, newPassword }),
 };
 
 // Questions API
@@ -57,11 +60,13 @@ export const questionsAPI = {
 
 // Answers API
 export const answersAPI = {
+  getAnswersByQuestion: (questionId) => api.get(`/answers/question/${questionId}`),
   createAnswer: (answerData) => api.post('/answers', answerData),
   updateAnswer: (id, answerData) => api.put(`/answers/${id}`, answerData),
   deleteAnswer: (id) => api.delete(`/answers/${id}`),
-  voteAnswer: (id, voteType) => api.post(`/answers/${id}/vote`, { voteType }),
   acceptAnswer: (id) => api.post(`/answers/${id}/accept`),
+  voteAnswer: (id, voteType) => api.post(`/answers/${id}/vote`, { voteType }),
+  // Note: Comments functionality not implemented in backend yet
   addComment: (id, content) => api.post(`/answers/${id}/comments`, { content }),
   deleteComment: (answerId, commentId) => api.delete(`/answers/${answerId}/comments/${commentId}`),
 };
@@ -69,7 +74,10 @@ export const answersAPI = {
 // Users API
 export const usersAPI = {
   getProfile: (username) => api.get(`/users/profile/${username}`),
-  updateProfile: (profileData) => api.put('/users/profile', profileData),
+  updateProfile: (profileData) => api.put('/users/me', profileData),
+  getLeaderboard: () => api.get('/users/leaderboard'),
+  deactivateAccount: () => api.delete('/users/me'),
+  // Note: Admin functionality not fully implemented in current backend
   getUsers: (params) => api.get('/users', { params }),
   updateUserRole: (id, role) => api.put(`/users/${id}/role`, { role }),
   updateUserStatus: (id, isActive) => api.put(`/users/${id}/status`, { isActive }),
@@ -88,10 +96,18 @@ export const notificationsAPI = {
 // Tags API
 export const tagsAPI = {
   getTags: (params) => api.get('/tags', { params }),
+  getTag: (id) => api.get(`/tags/${id}`),
+  // Note: Create, update, delete operations not implemented in current backend
   getPopularTags: (params) => api.get('/tags/popular', { params }),
   createTag: (tagData) => api.post('/tags', tagData),
   updateTag: (id, tagData) => api.put(`/tags/${id}`, tagData),
   deleteTag: (id) => api.delete(`/tags/${id}`),
+};
+
+// Votes API - New voting system
+export const votesAPI = {
+  vote: (targetId, targetType, voteType) => api.post('/votes', { targetId, targetType, voteType }),
+  removeVote: (targetId, targetType) => api.delete(`/votes/${targetId}/${targetType}`),
 };
 
 export default api;

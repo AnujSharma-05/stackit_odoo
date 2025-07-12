@@ -132,6 +132,14 @@ const HomePage = () => {
                   >
                     Get started
                   </Link>
+                  <Link
+                    to="/admin"
+                    className="px-8 py-4 bg-white text-black font-semibold rounded-xl 
+                             hover:bg-gray-100 transition-all duration-300 flex-shrink-0
+                             hover:scale-105 transform shadow-lg hover:shadow-xl"
+                  >
+                    Admin Dashboard
+                  </Link>
                 </div>
               </div>
             )}
@@ -319,7 +327,7 @@ const QuestionCard = ({ question }) => {
   };
 
   return (
-    <Link to={`/questions/${_id}`} className="block group">
+    <Link to={`/question/${_id}`} className="block group">
       <div className="bg-gray-900/60 border border-gray-800/50 rounded-xl p-6 
                     transition-all duration-300 ease-in-out
                     hover:bg-gray-900/80 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10
@@ -375,12 +383,12 @@ const QuestionCard = ({ question }) => {
               <div className="flex flex-wrap gap-2 mb-4">
                 {tags.slice(0, 3).map((tag, index) => (
                   <span
-                    key={index}
+                    key={tag._id || tag.id || index}
                     className="px-3 py-1.5 bg-gray-800/80 text-gray-200 text-xs rounded-lg
                              border border-gray-700/50 backdrop-blur-sm
                              hover:bg-gray-700/80 hover:border-gray-600/50 transition-all duration-200"
                   >
-                    {tag}
+                    {typeof tag === 'string' ? tag : tag.name}
                   </span>
                 ))}
                 {tags.length > 3 && (
