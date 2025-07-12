@@ -10,8 +10,8 @@ const questionSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    unique: true,
     lowercase: true
+    // Removed unique constraint temporarily to fix existing data
   },
   description: {
     type: String,
@@ -106,6 +106,26 @@ const questionSchema = new mongoose.Schema({
 }, {
   timestamps: true,
   toJSON: { virtuals: true }
+});
+
+// Generate slug from title before saving
+questionSchema.pre('save', function(next) {
+  if (this.isModified('title') || this.isNew) {
+    // Generate slug from title
+    this.slug = this.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .substring(0, 100); // Limit length
+    
+    // Add timestamp to ensure uniqueness
+    if (this.isNew) {
+      this.slug += '-' + Date.now();
+    }
+  }
+  next();
 });
 
 // Complex indexes for search and performance
