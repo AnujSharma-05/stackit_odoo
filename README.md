@@ -14,3 +14,212 @@ Rajat Agarwal
 agarwalrajat357@gmail.com
 
 
+
+# 🧠 StackIt – Full Stack Q&A Platform
+
+A feature-rich **Q&A web platform** (inspired by Stack Overflow) built with the **MERN stack (MongoDB, Express, React, Node.js)**.
+
+This project supports:
+- ✅ Rich text Q&A posting
+- ✅ Tagging, voting, bookmarking
+- ✅ Real-time notifications
+- ✅ Admin moderation
+- ✅ Secure authentication
+- ✅ Responsive UI
+
+---
+
+## 🧭 Table of Contents
+
+1. [Backend Architecture](#-backend-architecture)
+2. [Frontend Features](#-frontend-features)
+3. [API Reference](#-api-reference)
+4. [Key Features](#-key-features)
+5. [Security Considerations](#-security-considerations)
+6. [Performance Optimizations](#-performance-optimizations)
+7. [Setup Instructions](#-setup-instructions)
+
+---
+
+## 🧱 Backend Architecture
+
+> Built using **Express**, **MongoDB**, **Mongoose**, and **Socket.io**
+
+### 🔧 Project Structure
+
+<details>
+<summary>Click to expand</summary>
+
+```
+stackit-backend/
+├── src/
+│   ├── config/
+│   ├── models/
+│   ├── routes/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── utils/
+│   └── app.js
+├── uploads/
+├── .env
+├── server.js
+└── package.json
+```
+</details>
+
+### 🗄️ Mongoose Models
+
+- **User**: Auth, reputation, role (admin/user), avatar
+- **Question**: Title, description, tags, views, votes
+- **Answer**: Content, votes, isAccepted flag
+- **Vote**: Separate vote tracking by type and target
+- **Tag**: Question grouping with colors
+- **Notification**: Real-time alerts
+- **Indexes**: Compound and text indexes for performance
+
+---
+
+## 💻 Frontend Features
+
+> Built using **React**, **React Router**, **Axios**, **TailwindCSS**, **Toastify**, and **Framer Motion**
+
+### 🎨 Project Structure
+
+<details>
+<summary>Click to expand</summary>
+
+```
+stackit-frontend/
+├── src/
+│   ├── pages/
+│   ├── components/
+│   ├── hooks/
+│   ├── context/
+│   ├── api/
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+├── public/
+├── tailwind.config.js
+├── vite.config.js
+├── package.json
+└── index.html
+```
+</details>
+
+### 🧠 Major Frontend Functionalities
+
+| Feature | Description |
+|--------|-------------|
+| **Auth** | Register, Login, Forgot/Reset Password with JWT |
+| **Ask Question** | Rich text editor with tags and image support |
+| **Answer Flow** | Post/edit/delete answers, vote, accept |
+| **Vote System** | Upvote/downvote questions and answers |
+| **Search & Filter** | Search by keyword or tags |
+| **User Profiles** | View public profile, own contributions, leaderboard |
+| **Notifications** | Real-time toast & bell icon alerts using Socket.io |
+| **Admin Panel** | Moderate questions/answers, ban users |
+| **Responsive Design** | Mobile-friendly using TailwindCSS |
+| **Error Handling** | Toastify-based alerts, empty states, and loaders |
+| **Pagination** | For questions and answers lists |
+| **Bookmarking** | Save questions for later |
+| **Dark Mode (optional)** | Easy toggle support (optional module) |
+
+---
+
+## 📡 API Reference
+
+> Base URL: `/api/`
+
+🔐 **Auth**: `/auth`  
+👤 **Users**: `/users`  
+❓ **Q&A**: `/qa`  
+📩 **Notifications**: `/notifications`  
+🛠 **Admin**: `/admin`
+
+[Full API Reference included above]
+
+---
+
+## ✨ Key Features
+
+### 🔔 Real-time Notifications
+- Socket.io events on: answer, vote, mention, acceptance
+
+### 🔍 Search & Filtering
+- MongoDB text search + tag-based filters + sort
+
+### 📷 Image Upload
+- `Multer` + `Cloudinary` support  
+- Frontend preview + backend compression
+
+### 🧠 Rich Editor Support
+- HTML-safe content with sanitization and formatting
+- Supports embedded links and inline images
+
+### 👍 Voting System
+- Backend-enforced duplicate prevention
+- Auto reputation updates
+
+---
+
+## 🔐 Security Considerations
+
+- **Auth**: JWT + Refresh Tokens
+- **Roles**: Admin/User separation
+- **Rate Limiting**: On auth-sensitive routes
+- **Validation**: Frontend + backend schema checks
+- **XSS/CORS/CSRF**: Via `helmet`, `cors`, sanitization
+- **Upload Validation**: Type, size, format checks
+
+---
+
+## 🚀 Performance Optimizations
+
+- 🏷 **MongoDB Indexes**: Compound, text, sorted
+- 📦 **Caching**: Redis support for sessions & hot queries
+- 📁 **Image Optimization**: CDN, lazy loading
+- 📃 **Pagination**: Efficient data loading on frontend
+- 🧵 **Async Processing**: Event-driven architecture for votes and notifications
+
+---
+
+## 🛠 Setup Instructions
+
+### 1️⃣ Backend Setup
+
+```bash
+cd stackit-backend
+npm install
+cp .env.example .env
+# Fill in DB, JWT_SECRET, Cloudinary keys
+npm run dev
+```
+
+### 2️⃣ Frontend Setup
+
+```bash
+cd stackit-frontend
+npm install
+npm run dev
+```
+
+> Make sure frontend `.env` points to the correct backend API URL (`VITE_API_URL=http://localhost:5000/api`)
+
+---
+
+## 📦 Tech Stack Summary
+
+| Layer     | Technology              |
+|-----------|--------------------------|
+| Frontend  | React, React Router, TailwindCSS |
+| Backend   | Node.js, Express, MongoDB |
+| Realtime  | Socket.io                |
+| Uploads   | Multer + Cloudinary      |
+| Auth      | JWT, Bcrypt              |
+| Deployment | Vercel (Frontend), Render / Railway / EC2 (Backend) |
+
+---
+
+
+
