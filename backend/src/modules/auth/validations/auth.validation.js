@@ -23,20 +23,13 @@ const registerValidation = Joi.object({
   password: Joi.string()
     .min(8)
     .max(128)
-    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]'))
+    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)'))
     .required()
     .messages({
       'string.min': 'Password must be at least 8 characters',
       'string.max': 'Password cannot exceed 128 characters',
-      'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+      'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
       'any.required': 'Password is required'
-    }),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref('password'))
-    .required()
-    .messages({
-      'any.only': 'Passwords do not match',
-      'any.required': 'Password confirmation is required'
     }),
   role: Joi.string()
     .valid('user', 'admin')
