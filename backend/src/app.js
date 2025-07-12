@@ -13,11 +13,9 @@ app.use(cookieParser()); // Parse cookies from request headers
 
 // import routes
 import authRoutes from './modules/auth/routes/auth.routes.js';
-import userRoutes from "./modules/user/routes/user.routes.js";
 
 // use routes
 app.use('/api/auth', authRoutes);
-app.use("/api/users", userRoutes);
 
 
 export default app;
