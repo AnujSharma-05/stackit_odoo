@@ -15,10 +15,6 @@ agarwalrajat357@gmail.com
 
 
 
-# 🧠 StackIt – Full Stack Q&A Platform
-
-A feature-rich **Q&A web platform** (inspired by Stack Overflow) built with the **MERN stack (MongoDB, Express, React, Node.js)**.
-
 This project supports:
 - ✅ Rich text Q&A posting
 - ✅ Tagging, voting, bookmarking
