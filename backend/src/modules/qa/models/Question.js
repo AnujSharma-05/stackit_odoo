@@ -24,16 +24,18 @@ const questionSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  tags: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tag',
+  tags: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tag'
+    }],
     validate: {
       validator: function(tags) {
         return tags.length >= 1 && tags.length <= 5;
       },
       message: 'Question must have between 1 and 5 tags'
     }
-  }],
+  },
   difficulty: {
     type: String,
     enum: ['beginner', 'intermediate', 'advanced'],
