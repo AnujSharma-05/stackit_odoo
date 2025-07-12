@@ -383,12 +383,12 @@ const QuestionCard = ({ question }) => {
               <div className="flex flex-wrap gap-2 mb-4">
                 {tags.slice(0, 3).map((tag, index) => (
                   <span
-                    key={index}
+                    key={tag._id || tag.id || index}
                     className="px-3 py-1.5 bg-gray-800/80 text-gray-200 text-xs rounded-lg
                              border border-gray-700/50 backdrop-blur-sm
                              hover:bg-gray-700/80 hover:border-gray-600/50 transition-all duration-200"
                   >
-                    {tag}
+                    {typeof tag === 'string' ? tag : tag.name}
                   </span>
                 ))}
                 {tags.length > 3 && (

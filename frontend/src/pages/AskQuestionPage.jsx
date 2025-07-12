@@ -144,9 +144,9 @@ const AskQuestionPage = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      await questionsAPI.create({
+      await questionsAPI.createQuestion({
         title: formData.title,
-        content: formData.content,
+        description: formData.content,
         tags: formData.tags
       });
       toast.success('Question posted successfully!');

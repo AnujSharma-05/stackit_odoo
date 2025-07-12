@@ -72,11 +72,11 @@ const QuestionCard = ({ question }) => {
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
                   <Link
-                    key={tag}
-                    to={`/?tag=${encodeURIComponent(tag)}`}
+                    key={tag._id || tag.id || tag}
+                    to={`/?tag=${encodeURIComponent(typeof tag === 'string' ? tag : tag.name)}`}
                     className="tag tag-blue hover:bg-blue-200 transition-colors duration-150"
                   >
-                    {tag}
+                    {typeof tag === 'string' ? tag : tag.name}
                   </Link>
                 ))}
               </div>

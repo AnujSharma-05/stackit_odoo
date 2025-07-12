@@ -23,15 +23,15 @@ export const AuthProvider = ({ children }) => {
     if (token && savedUser) {
       try {
         setUser(JSON.parse(savedUser));
-        // Optional: Verify token is still valid (commented out to prevent logout loop)
-        // authAPI.getCurrentUser()
-        //   .then(response => {
-        //     setUser(response.data.user);
-        //     localStorage.setItem('user', JSON.stringify(response.data.user));
-        //   })
-        //   .catch(() => {
-        //     logout();
-        //   });
+        // Verify token is still valid
+        authAPI.getCurrentUser()
+          .then(response => {
+            setUser(response.data.data);
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+          })
+          .catch(() => {
+            logout();
+          });
       } catch (error) {
         logout();
       }
