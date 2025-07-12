@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const answerSchema = new mongoose.Schema({
   content: {
     type: String,
@@ -77,4 +79,4 @@ answerSchema.index({ question: 1, 'metrics.score': -1 });
 answerSchema.index({ author: 1, createdAt: -1 });
 answerSchema.index({ isAccepted: 1, 'metrics.score': -1 });
 
-module.exports = mongoose.model('Answer', answerSchema);
+export default mongoose.model('Answer', answerSchema);

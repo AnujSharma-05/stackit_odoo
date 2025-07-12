@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const questionSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -123,4 +125,4 @@ questionSchema.index({ 'metrics.score': -1, createdAt: -1 });
 questionSchema.index({ status: 1, lastActivity: -1 });
 questionSchema.index({ category: 1, difficulty: 1 });
 
-module.exports = mongoose.model('Question', questionSchema);
+export default mongoose.model('Question', questionSchema);

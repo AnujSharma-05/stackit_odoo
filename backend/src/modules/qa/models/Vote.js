@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const voteSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -41,4 +43,4 @@ voteSchema.index({ user: 1, target: 1, targetType: 1 }, { unique: true });
 voteSchema.index({ target: 1, targetType: 1, voteType: 1 });
 voteSchema.index({ user: 1, createdAt: -1 });
 voteSchema.index({ targetType: 1, createdAt: -1 });
-module.export = mongoose.model('Vote', voteSchema);
+export default mongoose.model('Vote', voteSchema);
