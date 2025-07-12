@@ -45,27 +45,7 @@ This project supports:
 
 > Built using **Express**, **MongoDB**, **Mongoose**, and **Socket.io**
 
-### 🔧 Project Structure
 
-<details>
-<summary>Click to expand</summary>
-
-```
-backend/
-├── src/
-│   ├── config/
-│   ├── models/
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── utils/
-│   └── app.js
-├── uploads/
-├── .env
-├── server.js
-└── package.json
-```
-</details>
 
 ### 🗄️ Mongoose Models
 
@@ -90,20 +70,51 @@ backend/
 
 ```
 frontend/
-├── src/
-│   ├── pages/
-│   ├── components/
-│   ├── hooks/
-│   ├── context/
-│   ├── api/
-│   ├── utils/
-│   ├── App.jsx
-│   └── main.jsx
+├── node_modules/ 
 ├── public/
-├── tailwind.config.js
-├── vite.config.js
-├── package.json
-└── index.html
+│   └── index.html 
+├── src/
+│   ├── components/
+│   │   ├── Auth/
+│   │   │   ├── AdminRoute.jsx 
+│   │   │   └── ProtectedRoute.jsx 
+│   │   ├── Editor/
+│   │   │   └── RichTextEditor.jsx 
+│   │   ├── Layout/
+│   │   │   └── Navbar.jsx 
+│   │   ├── Notifications/
+│   │   │   └── NotificationDropdown.jsx 
+│   │   ├── Questions/
+│   │   │   ├── AnswerComponent.jsx 
+│   │   │   ├── AnswerForm.jsx
+│   │   │   └── QuestionCard.jsx 
+│   │   ├── Tags/
+│   │   │   └── TagFilter.jsx
+│   │   └── UI/
+│   │       ├── LoadingSpinner.jsx 
+│   │       ├── Pagination.jsx
+│   │       └── VoteButtons.jsx 
+│   ├── contexts/
+│   │   └── AuthContext.jsx (
+│   ├── pages/
+│   │   ├── AdminDashboard.jsx)
+│   │   ├── AskQuestionPage.jsx 
+│   │   ├── HomePage.jsx 
+│   │   ├── LoginPage.jsx
+│   │   ├── NotificationsPage.jsx
+│   │   ├── ProfilePage.jsx 
+│   │   ├── QuestionDetailPage.jsx 
+│   │   └── RegisterPage.jsx 
+│   ├── services/
+│   │   └── api.js 
+│   ├── utility/
+│   ├── App.jsx 
+│   ├── index.css
+│   └── index.js 
+├── package-lock.json 
+├── package.json 
+├── postcss.config.js 
+└── tailwind.config.js 
 ```
 </details>
 
