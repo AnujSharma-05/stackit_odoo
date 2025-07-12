@@ -13,9 +13,17 @@ app.use(cookieParser()); // Parse cookies from request headers
 
 // import routes
 import authRoutes from './modules/auth/routes/auth.routes.js';
+import questionRoutes from './modules/qa/routes/question.routes.js';
+import answerRoutes from './modules/qa/routes/answer.routes.js';
+import voteRoutes from './modules/qa/routes/vote.routes.js';
+import tagRoutes from './modules/qa/routes/tag.routes.js';
 
 // use routes
 app.use('/api/auth', authRoutes);
+app.use('/api/questions', questionRoutes);
+app.use('/api/answers', answerRoutes);
+app.use('/api/votes', voteRoutes);
+app.use('/api/tags', tagRoutes);
 
 
 export default app;
