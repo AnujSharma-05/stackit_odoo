@@ -55,7 +55,11 @@ export const questionsAPI = {
   createQuestion: (questionData) => api.post('/questions', questionData),
   updateQuestion: (id, questionData) => api.put(`/questions/${id}`, questionData),
   deleteQuestion: (id) => api.delete(`/questions/${id}`),
-  voteQuestion: (id, voteType) => api.post(`/questions/${id}/vote`, { voteType }),
+  voteQuestion: (id, voteType) => api.post('/votes', { 
+    target: id, 
+    targetType: 'Question', 
+    voteType: voteType === 'up' ? 'upvote' : 'downvote' 
+  }),
 };
 
 // Answers API
@@ -65,7 +69,11 @@ export const answersAPI = {
   updateAnswer: (id, answerData) => api.put(`/answers/${id}`, answerData),
   deleteAnswer: (id) => api.delete(`/answers/${id}`),
   acceptAnswer: (id) => api.post(`/answers/${id}/accept`),
-  voteAnswer: (id, voteType) => api.post(`/answers/${id}/vote`, { voteType }),
+  voteAnswer: (id, voteType) => api.post('/votes', { 
+    target: id, 
+    targetType: 'Answer', 
+    voteType: voteType === 'up' ? 'upvote' : 'downvote' 
+  }),
   // Note: Comments functionality not implemented in backend yet
   addComment: (id, content) => api.post(`/answers/${id}/comments`, { content }),
   deleteComment: (answerId, commentId) => api.delete(`/answers/${answerId}/comments/${commentId}`),
@@ -108,6 +116,12 @@ export const tagsAPI = {
 export const votesAPI = {
   vote: (targetId, targetType, voteType) => api.post('/votes', { targetId, targetType, voteType }),
   removeVote: (targetId, targetType) => api.delete(`/votes/${targetId}/${targetType}`),
+};
+
+// Stats API
+export const statsAPI = {
+  getCommunityStats: () => api.get('/stats/community'),
+  getDashboardStats: () => api.get('/stats/dashboard'),
 };
 
 export default api;

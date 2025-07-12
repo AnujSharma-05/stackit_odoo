@@ -23,6 +23,7 @@ import voteRoutes from './modules/qa/routes/vote.routes.js';
 import tagRoutes from './modules/qa/routes/tag.routes.js';
 import notificationRoutes from './modules/qa/routes/notification.routes.js';
 import migrationRoutes from './modules/admin/routes/migration.routes.js';
+import statsRoutes from './modules/stats/routes/stats.routes.js';
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -33,6 +34,7 @@ app.use('/api/votes', voteRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin/migration', migrationRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

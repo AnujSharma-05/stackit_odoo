@@ -39,8 +39,7 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class: 'prose prose-invert max-w-none focus:outline-none text-white bg-transparent',
-        style: `min-height: ${minHeight}; color: #ffffff !important; padding-left: 0; margin-left: 0;`,
-        'data-placeholder': placeholder,
+        style: `min-height: ${minHeight}; color: #ffffff !important;`,
       },
     },
   });
@@ -71,9 +70,9 @@ const RichTextEditor = ({
   }
 
   return (
-    <div className="border border-gray-700/50 rounded-lg bg-gray-900/20 backdrop-blur-sm overflow-hidden focus-within:border-blue-500/50 transition-colors">
+    <div className="border border-gray-600/50 rounded-lg bg-gray-800/30 backdrop-blur-sm overflow-hidden">
       {/* Toolbar */}
-      <div className="border-b border-gray-700/50 bg-gray-800/40 p-2">
+      <div className="border-b border-gray-600/50 bg-gray-900/50 p-2">
         <div className="flex items-center gap-1 flex-wrap">
           {/* Text Formatting */}
           <button
@@ -201,13 +200,13 @@ const RichTextEditor = ({
       </div>
 
       {/* Editor Content */}
-      <div className="px-2 py-2 min-h-[150px] relative bg-gray-900/30 border border-gray-700/50 rounded-b-lg">
+      <div className="p-4 min-h-[150px] relative">
         <EditorContent 
           editor={editor} 
           className="rich-text-editor-content"
         />
-        {(!content || content === '<p></p>' || content.trim() === '') && (
-          <div className="absolute top-4 left-6 text-gray-300 pointer-events-none text-sm font-medium">
+        {!content && (
+          <div className="absolute top-4 left-4 text-gray-500 pointer-events-none">
             {placeholder}
           </div>
         )}
@@ -215,32 +214,17 @@ const RichTextEditor = ({
 
       {/* Custom Styles */}
       <style jsx global>{`
-        .rich-text-editor-content {
-          padding: 0.5rem;
-        }
-        
         .rich-text-editor-content .ProseMirror {
           outline: none;
           color: #ffffff !important;
           background: transparent;
           font-size: 14px;
           line-height: 1.6;
-          padding: 0.75rem 1rem;
-          margin: 0;
-        }
-        
-        .rich-text-editor-content .ProseMirror:empty::before {
-          content: attr(data-placeholder);
-          color: #9ca3af !important;
-          pointer-events: none;
-          float: left;
-          height: 0;
         }
         
         .rich-text-editor-content .ProseMirror p {
           color: #ffffff !important;
           margin: 0.5rem 0;
-          padding-left: 0;
         }
         
         .rich-text-editor-content .ProseMirror h1,
