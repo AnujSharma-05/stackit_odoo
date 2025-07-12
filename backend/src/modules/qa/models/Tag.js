@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // 4. Tag Schema
 const tagSchema = new mongoose.Schema({
@@ -72,4 +72,4 @@ tagSchema.index({ 'metrics.questionCount': -1 });
 tagSchema.index({ category: 1, status: 1 });
 tagSchema.index({ status: 1, 'metrics.questionCount': -1 });
 
-module.export = mongoose.model('Tag', tagSchema);
+export default mongoose.model('Tag', tagSchema);

@@ -12,6 +12,10 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 app.use(cookieParser()); // Parse cookies from request headers
 
 // import routes
+import authRoutes from './modules/auth/routes/auth.routes.js';
+
+// use routes
+app.use('/api/auth', authRoutes);
 
 
 export default app;

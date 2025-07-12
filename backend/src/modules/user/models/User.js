@@ -1,3 +1,6 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
 // User Schema - Enhanced with reputation system
 const userSchema = new mongoose.Schema({
   username: {
@@ -104,4 +107,4 @@ userSchema.methods.isPasswordCorrect = async function (password) { // custom met
   return await bcrypt.compare(password, this.password); // returns true or false (this.password is that which is in db)
 }
 
-module.export = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

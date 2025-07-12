@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const categorySchema = new mongoose.Schema({
   name: {
     type: String,
@@ -100,4 +102,4 @@ categorySchema.index({ level: 1, status: 1 });
 categorySchema.index({ 'metrics.questionCount': -1 });
 categorySchema.index({ status: 1, displayOrder: 1 });
 
-module.exports = mongoose.model('Category', categorySchema);
+export default mongoose.model('Category', categorySchema);

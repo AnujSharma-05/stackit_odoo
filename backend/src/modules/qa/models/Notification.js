@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const notificationSchema = new mongoose.Schema({
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
@@ -85,4 +87,4 @@ notificationSchema.index({ createdAt: -1 });
 notificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 notificationSchema.index({ status: 1, priority: 1 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+export default mongoose.model('Notification', notificationSchema);
