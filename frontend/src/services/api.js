@@ -118,4 +118,10 @@ export const votesAPI = {
   removeVote: (targetId, targetType) => api.delete(`/votes/${targetId}/${targetType}`),
 };
 
+// Stats API
+export const statsAPI = {
+  getCommunityStats: () => api.get('/stats/community'),
+  getDashboardStats: () => api.get('/stats/dashboard'),
+};
+
 export default api;

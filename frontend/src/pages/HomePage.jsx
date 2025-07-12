@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { questionsAPI } from '../services/api';
+import { questionsAPI, statsAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import VoteButtons from '../components/UI/VoteButtons';
 import Pagination from '../components/UI/Pagination';
@@ -20,6 +20,14 @@ const HomePage = () => {
   const [totalPages, setTotalPages] = useState(0);
   // For demo purposes, let's force pagination to show even with 4 questions
   const questionsPerPage = 2; // Change to 2 to show pagination with 4 questions
+
+  // Community stats state
+  const [communityStats, setCommunityStats] = useState({
+    questions: 0,
+    answers: 0,
+    activeUsers: '0'
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   const fetchQuestions = useCallback(async () => {
     try {
@@ -96,7 +104,27 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchQuestions();
+    fetchCommunityStats();
   }, [fetchQuestions]);
+
+  // Function to fetch community stats
+  const fetchCommunityStats = async () => {
+    try {
+      setStatsLoading(true);
+      const response = await statsAPI.getCommunityStats();
+      console.log('Community stats response:', response.data);
+      setCommunityStats({
+        questions: response.data.totalQuestions || 0,
+        answers: response.data.totalAnswers || 0,
+        activeUsers: response.data.activeUsers || '0'
+      });
+    } catch (error) {
+      console.error('Error fetching community stats:', error);
+      // Keep default values on error
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
   const handleQuestionUpdate = (updatedQuestion) => {
     setQuestions(prev => prev.map(q => 
@@ -264,21 +292,51 @@ const HomePage = () => {
                 {/* Community Stats */}
                 <div className="bg-gray-900/60 border border-gray-800/50 rounded-xl p-6 backdrop-blur-md">
                   <h3 className="text-lg font-semibold mb-4 text-white">Community Stats</h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30">
-                      <span className="text-gray-300">Questions</span>
-                      <span className="text-white font-semibold text-lg">{questions.length}</span>
+                  
+                  {statsLoading ? (
+                    <div className="space-y-4">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30">
+                            <div className="h-4 bg-gray-700/50 rounded w-1/2"></div>
+                            <div className="h-6 bg-gray-600/50 rounded w-1/4"></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30">
-                      <span className="text-gray-300">Answers</span>
-                      <span className="text-white font-semibold text-lg">
-                        {questions.reduce((acc, q) => acc + (q.answerCount || 0), 0)}
-                      </span>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30 hover:bg-gray-800/60 transition-colors">
+                        <span className="text-gray-300">Questions</span>
+                        <span className="text-blue-400 font-semibold text-lg">
+                          {communityStats.questions.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30 hover:bg-gray-800/60 transition-colors">
+                        <span className="text-gray-300">Answers</span>
+                        <span className="text-green-400 font-semibold text-lg">
+                          {communityStats.answers.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30 hover:bg-gray-800/60 transition-colors">
+                        <span className="text-gray-300">Active Users</span>
+                        <span className="text-purple-400 font-semibold text-lg">
+                          {communityStats.activeUsers}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-800/40 rounded-lg border border-gray-700/30">
-                      <span className="text-gray-300">Active Users</span>
-                      <span className="text-white font-semibold text-lg">1.2k</span>
-                    </div>
+                  )}
+                  
+                  <div className="mt-6 pt-4 border-t border-gray-800/30">
+                    <button
+                      onClick={fetchCommunityStats}
+                      className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Refresh Stats
+                    </button>
                   </div>
                 </div>
               </div>
