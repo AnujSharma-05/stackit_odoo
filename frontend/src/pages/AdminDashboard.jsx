@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { questionsAPI } from '../services/api';
 import { TrashIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const AdminDashboard = () => {
@@ -14,10 +14,11 @@ const AdminDashboard = () => {
   const fetchFlaggedQuestions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/questions?flagged=true');
-      setFlaggedQuestions(response.data.questions || []);
+      const response = await questionsAPI.getQuestions({ flagged: true });
+      setFlaggedQuestions(response.data.data.docs || response.data.data || []);
     } catch (err) {
       setError('Failed to fetch flagged questions.');
+      console.error('Error fetching flagged questions:', err);
     } finally {
       setLoading(false);
     }
@@ -25,19 +26,22 @@ const AdminDashboard = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.put(`/api/admin/questions/${id}/approve`);
+      // Note: Admin approval endpoint needs to be implemented in backend
+      await questionsAPI.updateQuestion(id, { approved: true });
       setFlaggedQuestions((prev) => prev.filter((q) => q._id !== id));
     } catch (err) {
       console.error('Approval failed:', err);
+      setError('Failed to approve question.');
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/questions/${id}`);
+      await questionsAPI.deleteQuestion(id);
       setFlaggedQuestions((prev) => prev.filter((q) => q._id !== id));
     } catch (err) {
       console.error('Delete failed:', err);
+      setError('Failed to delete question.');
     }
   };
 

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const notificationSchema = new mongoose.Schema({
   recipient: {
@@ -86,5 +87,8 @@ notificationSchema.index({ sender: 1, createdAt: -1 });
 notificationSchema.index({ createdAt: -1 });
 notificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 notificationSchema.index({ status: 1, priority: 1 });
+
+// Add pagination plugin
+notificationSchema.plugin(mongooseAggregatePaginate);
 
 export default mongoose.model('Notification', notificationSchema);
